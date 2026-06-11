@@ -1,0 +1,14 @@
+{
+  "actorSpecification": 1,
+  "name": "flagma-scraper",
+  "title": "Flagma Scraper",
+  "version": "0.1",
+  "buildTag": "latest",
+  "meta": { "generatedBy": "Claude Code with Claude Opus 4.8" },
+  "input": "./INPUT_SCHEMA.json",
+  "output": "./output_schema.json",
+  "dockerfile": "../Dockerfile",
+  "storages": {
+    "dataset": "./dataset_schema.json"
+  }
+}
