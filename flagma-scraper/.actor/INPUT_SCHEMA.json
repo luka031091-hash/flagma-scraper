@@ -1,0 +1,49 @@
+{
+  "title": "Flagma Scraper",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "startUrls": {
+      "title": "Стартові URL",
+      "type": "array",
+      "description": "Сторінки пошуку або категорій Flagma.ua (LIST). Напр. https://flagma.ua/uk/products/q=металлопрокат/",
+      "editor": "requestListSources",
+      "prefill": [{ "url": "https://flagma.ua/uk/products/q=%D0%BC%D0%B5%D1%82%D0%B0%D0%BB%D0%BB%D0%BE%D0%BF%D1%80%D0%BE%D0%BA%D0%B0%D1%82/" }]
+    },
+    "maxItems": {
+      "title": "Ліміт лотів",
+      "type": "integer",
+      "description": "Максимум оголошень за запуск. 0 — без ліміту.",
+      "default": 0,
+      "minimum": 0
+    },
+    "maxRequestsPerMinute": {
+      "title": "Запитів за хвилину",
+      "type": "integer",
+      "description": "Обмеження темпу (анти-бан).",
+      "default": 60,
+      "minimum": 1
+    },
+    "maxConcurrency": {
+      "title": "Паралелізм",
+      "type": "integer",
+      "description": "Кількість одночасних запитів (анти-бан).",
+      "default": 5,
+      "minimum": 1
+    },
+    "fetchPhones": {
+      "title": "Збирати телефони",
+      "type": "boolean",
+      "description": "Чи парсити телефон продавця. Вимкніть для збору без контактів.",
+      "default": true
+    },
+    "proxyConfiguration": {
+      "title": "Проксі",
+      "type": "object",
+      "description": "Конфігурація проксі (рекомендовано Apify Proxy).",
+      "editor": "proxy",
+      "default": { "useApifyProxy": true }
+    }
+  },
+  "required": ["startUrls"]
+}
