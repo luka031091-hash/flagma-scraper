@@ -1,0 +1,13 @@
+{
+    "actorOutputSchemaVersion": 1,
+    "title": "Flagma Scraper — оголошення",
+    "description": "Датасет зі зібраними оголошеннями Flagma.ua",
+    "properties": {
+        "dataset": {
+            "type": "string",
+            "title": "Results",
+            "description": "Датасет із усіма зібраними оголошеннями",
+            "template": "{{links.apiDefaultDatasetUrl}}/items"
+        }
+    }
+}

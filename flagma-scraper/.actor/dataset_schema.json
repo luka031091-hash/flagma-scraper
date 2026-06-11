@@ -1,0 +1,196 @@
+{
+    "actorSpecification": 1,
+    "fields": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "string",
+                "description": "Унікальний id оголошення (числовий суфікс URL); fallback — повний URL.",
+                "nullable": true,
+                "example": "14017986"
+            },
+            "url": {
+                "type": "string",
+                "description": "URL сторінки оголошення.",
+                "nullable": true,
+                "example": "https://flagma.ua/uk/example-o14017986.html"
+            },
+            "sourceStartUrl": {
+                "type": "string",
+                "description": "Стартовий LIST-URL, з якого прийшов цей лот.",
+                "nullable": true,
+                "example": "https://flagma.ua/uk/products/q=example/"
+            },
+            "listingType": {
+                "type": "string",
+                "description": "Тип оголошення (евристика за міткою/URL).",
+                "enum": ["продам", "куплю"],
+                "nullable": true,
+                "example": "продам"
+            },
+            "title": {
+                "type": "string",
+                "description": "Заголовок оголошення.",
+                "nullable": true,
+                "example": "Металопрокат, труби, швелер, кутник"
+            },
+            "description": {
+                "type": "string",
+                "description": "Повний текст опису оголошення.",
+                "nullable": true,
+                "example": "Приклад опису товару з умовами продажу й доставки."
+            },
+            "rawPrice": {
+                "type": "string",
+                "description": "Оригінальний текст ціни, включно з нечисловими значеннями («договірна»).",
+                "nullable": true,
+                "example": "30 грн/штука"
+            },
+            "normalizedPrice": {
+                "type": "number",
+                "description": "Виділене з тексту число ціни; null для нечислових цін.",
+                "nullable": true,
+                "example": 30
+            },
+            "currency": {
+                "type": "string",
+                "description": "Валюта ціни.",
+                "enum": ["UAH", "USD", "EUR"],
+                "nullable": true,
+                "example": "UAH"
+            },
+            "priceUnit": {
+                "type": "string",
+                "description": "Одиниця виміру ціни (шт, кг, т, штука тощо).",
+                "nullable": true,
+                "example": "штука"
+            },
+            "category": {
+                "type": "string",
+                "description": "Найглибша категорія оголошення з хлібних крихт.",
+                "nullable": true,
+                "example": "Балки металеві, двотаври"
+            },
+            "seller": {
+                "type": "object",
+                "description": "Інформація про продавця.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Назва продавця/компанії.",
+                        "nullable": true,
+                        "example": "Приклад Компанія"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Тип продавця (ФОП, ТОВ, приватна тощо).",
+                        "nullable": true,
+                        "example": "ТОВ"
+                    }
+                },
+                "required": [],
+                "additionalProperties": true,
+                "nullable": true,
+                "example": { "name": "Приклад Компанія", "type": "ТОВ" }
+            },
+            "location": {
+                "type": "object",
+                "description": "Геолокація оголошення.",
+                "properties": {
+                    "city": {
+                        "type": "string",
+                        "description": "Місто.",
+                        "nullable": true,
+                        "example": "Київ"
+                    },
+                    "region": {
+                        "type": "string",
+                        "description": "Область/регіон.",
+                        "nullable": true,
+                        "example": "Київська область"
+                    },
+                    "country": {
+                        "type": "string",
+                        "description": "Код країни (за замовчуванням UA).",
+                        "nullable": true,
+                        "example": "UA"
+                    }
+                },
+                "required": [],
+                "additionalProperties": true,
+                "nullable": true,
+                "example": { "city": "Київ", "region": "Київська область", "country": "UA" }
+            },
+            "phone": {
+                "type": "string",
+                "description": "Телефон продавця у нормалізованому форматі; null якщо не отримано.",
+                "nullable": true,
+                "example": "+380501234567"
+            },
+            "phoneStatus": {
+                "type": "string",
+                "description": "Статус отримання телефону: found — отримано; hidden — структурно прихований; failed — спроба не вдалася; disabled — збір вимкнено.",
+                "enum": ["found", "hidden", "failed", "disabled"],
+                "nullable": true,
+                "example": "found"
+            },
+            "images": {
+                "type": "array",
+                "description": "URL зображень оголошення.",
+                "items": { "type": "string" },
+                "nullable": true,
+                "example": ["https://img01.flagma.ua/photo/example_big.jpg"]
+            },
+            "publishedAt": {
+                "type": "string",
+                "description": "Дата публікації/оновлення оголошення (сирий рядок із сайту).",
+                "nullable": true,
+                "example": "27 жовтня 2023, 00:02"
+            },
+            "scrapedAt": {
+                "type": "string",
+                "description": "ISO-8601 час збору запису.",
+                "nullable": true,
+                "example": "2026-06-11T12:00:00.000Z"
+            }
+        },
+        "required": [],
+        "additionalProperties": true
+    },
+    "views": {
+        "overview": {
+            "title": "Overview",
+            "description": "Ключові поля оголошення",
+            "transformation": {
+                "fields": [
+                    "title",
+                    "listingType",
+                    "normalizedPrice",
+                    "currency",
+                    "priceUnit",
+                    "category",
+                    "phone",
+                    "phoneStatus",
+                    "publishedAt",
+                    "url"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "title": { "label": "Заголовок", "format": "text" },
+                    "listingType": { "label": "Тип", "format": "text" },
+                    "normalizedPrice": { "label": "Ціна", "format": "number" },
+                    "currency": { "label": "Валюта", "format": "text" },
+                    "priceUnit": { "label": "Од.", "format": "text" },
+                    "category": { "label": "Категорія", "format": "text" },
+                    "phone": { "label": "Телефон", "format": "text" },
+                    "phoneStatus": { "label": "Статус тел.", "format": "text" },
+                    "publishedAt": { "label": "Опубліковано", "format": "text" },
+                    "url": { "label": "URL", "format": "link" }
+                }
+            }
+        }
+    }
+}
