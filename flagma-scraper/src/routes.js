@@ -1,3 +1,4 @@
+import { createCheerioRouter, Dataset } from 'crawlee';
 import { selectors } from './selectors.js';
 import {
   extractId, cleanText, parsePrice, detectListingType, parseSeller,
@@ -105,4 +106,56 @@ export function parseDetail($, url, opts = {}) {
     images,
     publishedAt,
   };
+}
+
+/**
+ * Будує роутер LIST/DETAIL.
+ * @param {object} opts
+ * @param {boolean} opts.fetchPhones
+ * @param {() => boolean} opts.isLimitReached
+ * @param {() => void} opts.onPushed
+ */
+export function buildRouter(opts) {
+  const router = createCheerioRouter();
+
+  const handleList = async ({ $, request, crawler, log }) => {
+    if (opts.isLimitReached()) return;
+    const baseUrl = request.loadedUrl || request.url;
+    const sourceStartUrl = request.userData.sourceStartUrl || baseUrl;
+
+    const links = parseListingLinks($, baseUrl);
+    const detailRequests = links.map(({ url, id }) => ({
+      url,
+      label: 'DETAIL',
+      uniqueKey: id || url,                 // дедуплікація за id (спека §7)
+      userData: { sourceStartUrl },
+    }));
+    await crawler.addRequests(detailRequests);
+
+    const next = parseNextPageUrl($, baseUrl);
+    if (next) {
+      await crawler.addRequests([{ url: next, label: 'LIST', userData: { sourceStartUrl } }]);
+    }
+    log.info(`LIST ${baseUrl}: ${links.length} лотів, next=${Boolean(next)}`);
+  };
+
+  const handleDetail = async ({ $, request, log }) => {
+    if (opts.isLimitReached()) return;
+    const url = request.loadedUrl || request.url;
+    const record = parseDetail($, url, { fetchPhones: opts.fetchPhones });
+    if (!record) {
+      log.warning(`Пропуск (немає title): ${url}`);
+      return;
+    }
+    record.sourceStartUrl = request.userData.sourceStartUrl || null;
+    record.scrapedAt = new Date().toISOString();
+    await Dataset.pushData(record);
+    opts.onPushed();
+    if (record.phoneStatus === 'failed') log.warning(`Телефон не отримано: ${url}`);
+  };
+
+  router.addHandler('LIST', handleList);
+  router.addHandler('DETAIL', handleDetail);
+  router.addDefaultHandler(handleList); // захист: будь-який немаркований запит → LIST
+  return router;
 }
