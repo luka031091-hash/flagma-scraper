@@ -25,7 +25,7 @@
             "listingType": {
                 "type": "string",
                 "description": "Тип оголошення (евристика за міткою/URL).",
-                "enum": ["продам", "куплю"],
+                "enum": ["продам", "куплю", null],
                 "nullable": true,
                 "example": "продам"
             },
@@ -55,8 +55,7 @@
             },
             "currency": {
                 "type": "string",
-                "description": "Валюта ціни.",
-                "enum": ["UAH", "USD", "EUR"],
+                "description": "Валюта ціни (зазвичай UAH, USD або EUR; може бути інший код із JSON-LD).",
                 "nullable": true,
                 "example": "UAH"
             },
@@ -131,7 +130,7 @@
             "phoneStatus": {
                 "type": "string",
                 "description": "Статус отримання телефону: found — отримано; hidden — структурно прихований; failed — спроба не вдалася; disabled — збір вимкнено.",
-                "enum": ["found", "hidden", "failed", "disabled"],
+                "enum": ["found", "hidden", "failed", "disabled", null],
                 "nullable": true,
                 "example": "found"
             },

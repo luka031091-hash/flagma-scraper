@@ -40,9 +40,9 @@
     "proxyConfiguration": {
       "title": "Проксі",
       "type": "object",
-      "description": "Конфігурація проксі (рекомендовано Apify Proxy).",
+      "description": "Конфігурація проксі. УВАГА: Flagma блокує datacenter-проксі (Apify Proxy за замовчуванням — datacenter), збір повертає 0 лотів. Дефолт — без проксі (прямі запити). Для масштабу вмикайте RESIDENTIAL.",
       "editor": "proxy",
-      "default": { "useApifyProxy": true }
+      "default": { "useApifyProxy": false }
     }
   },
   "required": ["startUrls"]

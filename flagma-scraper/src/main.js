@@ -11,7 +11,7 @@ const {
   maxRequestsPerMinute = 60,
   maxConcurrency = 5,
   fetchPhones = true,
-  proxyConfiguration: proxyInput = { useApifyProxy: true },
+  proxyConfiguration: proxyInput = { useApifyProxy: false },
 } = input;
 
 if (!startUrls.length) throw new Error('startUrls is required');
