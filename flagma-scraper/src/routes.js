@@ -9,7 +9,8 @@ import { extractPhones } from './phone.js';
 /**
  * Дістає посилання на оголошення зі сторінки списку.
  * Фільтрує рекламні картки. Дедуплікує за id (fallback — url).
- * @returns {{url: string, id: string|null}[]}
+ * type визначається з бейджа картки (.message-type "Куплю"); відсутність бейджа → "продам".
+ * @returns {{url: string, id: string|null, type: 'куплю'|'продам'}[]}
  */
 export function parseListingLinks($, baseUrl) {
   const links = [];
@@ -25,8 +26,21 @@ export function parseListingLinks($, baseUrl) {
     const key = id || url;
     if (seen.has(key)) return;
     seen.add(key);
-    links.push({ url, id });
+    // Flagma показує бейдж "Куплю" лише на оголошеннях попиту; продам — без бейджа.
+    const type = detectListingType($card.find(selectors.list.cardType).first().text()) || 'продам';
+    links.push({ url, id, type });
   });
+  return links;
+}
+
+/**
+ * Фільтрує картки за типом оголошення.
+ * @param {{type: string}[]} links
+ * @param {'all'|'buy'|'sell'|undefined} listingType
+ */
+export function filterLinksByType(links, listingType) {
+  if (listingType === 'buy') return links.filter((l) => l.type === 'куплю');
+  if (listingType === 'sell') return links.filter((l) => l.type === 'продам');
   return links;
 }
 
@@ -112,11 +126,13 @@ export function parseDetail($, url, opts = {}) {
  * Будує роутер LIST/DETAIL.
  * @param {object} opts
  * @param {boolean} opts.fetchPhones
+ * @param {'all'|'buy'|'sell'} [opts.listingType] фільтр типу оголошення (default 'all')
  * @param {() => boolean} opts.isLimitReached
  * @param {() => void} opts.onPushed
  */
 export function buildRouter(opts) {
   const router = createCheerioRouter();
+  const listingType = opts.listingType || 'all';
 
   const handleList = async ({ $, request, crawler, log }) => {
     if (opts.isLimitReached()) return;
@@ -124,7 +140,10 @@ export function buildRouter(opts) {
     const sourceStartUrl = request.userData.sourceStartUrl || baseUrl;
 
     const links = parseListingLinks($, baseUrl);
-    const detailRequests = links.map(({ url, id }) => ({
+    // Фільтр типу — лише для DETAIL-запитів. Пагінацію НЕ чіпаємо:
+    // потрібні картки можуть бути на наступних сторінках.
+    const wanted = filterLinksByType(links, listingType);
+    const detailRequests = wanted.map(({ url, id }) => ({
       url,
       label: 'DETAIL',
       uniqueKey: id || url,                 // дедуплікація за id (спека §7)
@@ -136,7 +155,7 @@ export function buildRouter(opts) {
     if (next) {
       await crawler.addRequests([{ url: next, label: 'LIST', userData: { sourceStartUrl } }]);
     }
-    log.info(`LIST ${baseUrl}: ${links.length} лотів, next=${Boolean(next)}`);
+    log.info(`LIST ${baseUrl}: ${links.length} лотів, ${wanted.length} за фільтром "${listingType}", next=${Boolean(next)}`);
   };
 
   const handleDetail = async ({ $, request, log }) => {
