@@ -6,6 +6,7 @@ export const selectors = {
     card: '#message-list .page-list-item',          // картка оголошення у списку
     adMarker: '.google-ads',                          // якщо картка має цей клас — це реклама, пропустити
     cardLink: 'a.photo[href], .page-list-item-header a[href]', // посилання на сторінку оголошення
+    cardType: '.message-type',                        // бейдж "Куплю" на картці (продам — без бейджа)
     nextPage: 'link[rel="next"]',                     // наступна сторінка (head); відсутній → остання сторінка
   },
   detail: {

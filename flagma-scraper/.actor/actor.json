@@ -2,7 +2,7 @@
   "actorSpecification": 1,
   "name": "flagma-scraper",
   "title": "Flagma Scraper",
-  "version": "0.1",
+  "version": "0.2",
   "buildTag": "latest",
   "meta": { "generatedBy": "Claude Code with Claude Opus 4.8" },
   "input": "./INPUT_SCHEMA.json",
